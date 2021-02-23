@@ -1,0 +1,148 @@
+<html>
+	<head>
+		<script src="./js/jquery.min.js"></script>
+		<script src="./js/json3.min.js"></script>
+		<link rel="stylesheet" href="./css/client.css">
+		<link class="ThemeTypeIf" rel="stylesheet" href="./css/default.css">
+		<link rel="stylesheet" href="./css/all.min.css">
+		<script>
+			var DarkMode = false;
+			var FollowSystemIf = true;
+			if((typeof(localStorage.getItem('StyleChosen'))).toLowerCase() != 'string')
+				localStorage.setItem('StyleChosen', 'FollowSystem');
+			if(window.matchMedia('(prefers-color-scheme)').media === 'not all')
+				FollowSystemIf = false,localStorage.setItem('StyleChosen', 'Dark');
+			else if (localStorage.getItem('StyleChosen') == 'FollowSystem') {
+				if(window.matchMedia('(prefers-color-scheme: dark)').matches){
+					DarkMode = true, $('.ThemeTypeIf').attr('href','./css/dark.css');
+				}
+			}
+			if(localStorage.getItem('StyleChosen') == 'Dark')
+				DarkMode = true, $('.ThemeTypeIf').attr('href','./css/dark.css');
+		</script>
+	</head>
+	<body>
+		<div class="HtmlContainer">
+			<div class="InfoContainer">
+				<span class="ToolList2">
+					<span class="ToolListItem2 chosenTool2" onclick="changeSelect2(0);"><i class="fas fa-eye-dropper"></i></span>
+					<span class="ToolListItem2" onclick="changeSelect2(1);"><i class="fas fa-sliders-h"></i></span>
+					<span class="ToolListItem2" onclick="changeSelect2(2);"><i class="fas fa-code"></i></span>
+			        <span class="ToolListItem2" onclick="changeSelect2(3);"><i class="fas fa-save"></i></span>
+			        <span class="ToolListItem2" onclick="changeSelect2(4);"><i class="fas fa-cogs"></i></span>
+			        <span class="ToolListItem2" onclick="changeSelect2(5);"><i class="fas fa-laptop-code"></i></span>
+			        <span class="SelectedTool2"></span>
+		   		</span>
+		   		<div class="InfoDetailContainer" style="height: 440px;">
+		   			<div class="InfoDetail" style="width:100%;opacity:1"><div style="width:100%;height:100%;display:inline-grid;place-items:center;white-space:nowrap;">Global Style Settings</div></div>
+		   			<div class="InfoDetail" style="width:0px;padding:0px;opacity:0"><div style="width:100%;height:100%;display:inline-grid;place-items:center;white-space:nowrap;">Selected Items Style</div></div>
+		   			<div class="InfoDetail" style="width:0px;padding:0px;opacity:0"><div style="width:100%;height:100%;display:inline-grid;place-items:center;white-space:nowrap;">Generate Code</div></div>
+		   			<div class="InfoDetail" style="width:0px;padding:0px;opacity:0"><div style="width:100%;height:100%;display:inline-grid;place-items:center;white-space:nowrap;">Save As Pictures</div></div>
+		   			<div class="InfoDetail" style="width:0px;padding:0px;opacity:0">
+		   				<div class="StyleSettings">
+		   					Style: <span class="LightModeIf"><i class="far fa-square"></i> Light</span> <span class="DarkModeIf"><i class="far fa-square"></i> Dark</span> <span class="SystemModeIf"><i class="far fa-square"></i> System</span>
+		   				</div>
+		   			</div>
+		   		</div>
+			</div>
+			<div class="GrapherContainer">
+				<div class="SvgContainer"></div>
+				<div class="ToolListContainer">
+					<span class="ToolList">
+						<style>
+						  .fa-stack { font-size: 0.5em; }
+						</style>
+						<span class="ToolListItem chosenToolIf" onclick="changeSelect(0);"><i class="fas fa-mouse-pointer"></i></span>
+						<span class="ToolListItem" onclick="changeSelect(1);"><i class="fas fa-pen"></i></span>
+						<span class="ToolListItem" onclick="changeSelect(2);"><i class="fas fa-dot-circle"></i></span>
+				        <span class="ToolListItem" onclick="changeSelect(3);"><i class="fas fa-slash fa-flip-vertical"></i></span>
+						<span class="ToolListItem" onclick="changeSelect(4);"><span class="fa-stack fa-1x">
+				            <i class="fas fa-slash fa-flip-vertical fa-stack-2x"></i>
+				            <i class="fas fa-angle-up fa-stack-2x" style="transform: rotate(60deg);-webkit-transform: rotate(60deg);"></i>
+				        </span></span>
+				        <span class="ToolListItem" onclick="changeSelect(5);"><i class="fas fa-table"></i></span>
+				        <span class="ToolListItem" onclick="changeSelect(6);"><i class="fas fa-i-cursor"></i></span>
+			   		</span>
+				    <span class="SelectedTool"></span>
+		   		</div>
+	   		</div>
+   		</div>
+	</body>
+	<footer>
+		<script src="./js/client.js"></script>
+		<script>
+			function ChangeTheme(force){
+				if(!force && localStorage.getItem('StyleChosen')!='FollowSystem')	return;
+				if(!DarkMode){
+					$('.ThemeTypeIf').attr('href','./css/dark.css');
+				}
+				else{
+					$('.ThemeTypeIf').attr('href','./css/default.css');
+				}
+				DarkMode = !DarkMode;
+			}
+			if (window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
+				var listeners={
+				    dark: function(mediaQueryList ){
+				        if(mediaQueryList.matches && !DarkMode)
+				        	ChangeTheme(false);
+				    },
+				    light: function(mediaQueryList){
+				        if(mediaQueryList.matches && DarkMode)
+				        	ChangeTheme(false);
+				    }
+				}
+				window.matchMedia('(prefers-color-scheme: dark)').addListener(listeners.dark);
+				window.matchMedia('(prefers-color-scheme: light)').addListener(listeners.light);
+			}
+
+			function changeSelect(x){
+				if(chosenTool1 == x)	return;
+				$(".ToolList").css("left", 126 - (x - 3) * 40);
+				$(".ToolList").children().eq(chosenTool1+1).removeClass("chosenToolIf");
+				$(".ToolList").children().eq(x+1).addClass("chosenToolIf");
+				chosenTool1 = x;
+			}
+			function changeSelect2(x){
+				if(chosenTool2 == x)	return;
+				$(".SelectedTool2").css("left", x * 53.33 + 32);
+				$(".InfoDetailContainer").children().eq(chosenTool2).css("width", "0").css("padding", "0").css("opacity", "0");
+				$(".InfoDetailContainer").children().eq(x).css("width", "100%").css("padding", "10px").css("opacity", "1");
+				chosenTool2 = x;
+			}
+			function flushStyleSelector(){
+				$(".StyleSettings > span > i").attr("class", "far fa-square");
+				if(localStorage.getItem("StyleChosen") == "Light")
+					$(".LightModeIf > i").attr("class", "fas fa-check-square");
+				else if(localStorage.getItem("StyleChosen") == "Dark")
+					$(".DarkModeIf > i").attr("class", "fas fa-check-square");
+				else
+					$(".SystemModeIf > i").attr("class", "fas fa-check-square");
+				if(!FollowSystemIf)
+					$(".SystemModeIf > i").attr("class", "fas fa-lock");
+			}
+			flushStyleSelector();
+			$(".LightModeIf").click(function(){
+				localStorage.setItem("StyleChosen", "Light") ;
+				if(DarkMode)	ChangeTheme(true);
+				flushStyleSelector();
+			});
+			$(".DarkModeIf").click(function(){
+				localStorage.setItem("StyleChosen", "Dark") ;
+				if(!DarkMode)	ChangeTheme(true);
+				flushStyleSelector();
+			});
+			$(".SystemModeIf").click(function(){
+				if(!FollowSystemIf)	return;
+				localStorage.setItem("StyleChosen", "FollowSystem");
+				flushStyleSelector();
+				if(window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
+					if(window.matchMedia('(prefers-color-scheme: dark)').matches && !DarkMode)
+						ChangeTheme(true);
+					else if(window.matchMedia('(prefers-color-scheme: light)').matches && DarkMode)
+						ChangeTheme(true);
+				}
+			});
+		</script>
+	</footer>
+</html>
