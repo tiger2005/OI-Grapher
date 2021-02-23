@@ -147,3 +147,29 @@ input{
 ::-webkit-scrollbar-corner{
     display: none;
 }
+
+input[type="range"] {
+	-webkit-appearance: none;
+	background-color: grey;
+	height:4px;
+	padding: 0;
+	border: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	cursor: pointer;
+	top: 0;
+	height: 15px;
+	width: 15px;
+	transform: translateY(0px);
+	border-radius: 10px;
+	background: grey;
+	transition: border 0.2s;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+}
+input[type="number"]{
+	-moz-appearance: textfield;
+}

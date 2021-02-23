@@ -41,3 +41,9 @@ input{
 ::-webkit-scrollbar:hover{
     background-color: #ccc;
 }
+input[type="range"]::-webkit-slider-thumb {
+	border: 3px solid #222;
+}
+input[type="range"]::-webkit-slider-thumb:hover{
+	border: 1px solid #222;
+}

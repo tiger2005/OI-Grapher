@@ -98,11 +98,56 @@ function drawOptions(info, as){
 		if((typeof(info[i][1])).toLowerCase() == 'object')
 			ret +=`<div><i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center'></i><i class='fas fa-angle-right GraphFolder' style='width:18px;text-align:center;' id='fold'></i> ${toTitle(info[i][0])}<br/><div class="InfoSonList" style="display:none">${drawOptions(info[i][1], info[i][0])}</div></div>`;
 		else{
-			if(info[i][0] == 'Custom'){
+			if(info[i][0] == 'Custom' || info[i][0] == 'On'){
 				ret += `<div style="display:flex;flex-direction:row" codeId='${info[i][0]}'><i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center;'></i><span>&nbsp;${toTitle(info[i][0])}&nbsp;</span><i class="${info[i][1]==true?'fas fa-check-square':'far fa-square'}"></i></div>`;
 			}
 			else if(info[i][0] == 'Color'){
 				ret += `<div style="display:flex;flex-direction:row" codeId='${info[i][0]}'><i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center;'></i><span>&nbsp;${toTitle(info[i][0])}&nbsp;</span><span class="fas fa-square" style="width:18px;"></span><input style="flex:1;" class="ColorInput" value="${info[i][1]}"/></div>`;
+			}
+			else if(info[i][0] == 'FontSize'){
+
+			}
+			else if(info[i][0] == 'FontBold'){
+
+			}
+			else if(info[i][0] == 'FontStyle'){
+
+			}
+			else if(info[i][0] == 'Width'){
+
+			}
+			else if(info[i][0] == 'Radius'){
+
+			}
+			else if(info[i][0] == 'Padding'){
+
+			}
+			else if(info[i][0] == 'Spacing'){
+
+			}
+			else if(info[i][0] == 'DotType'){
+
+			}
+			else if(info[i][0] == 'ContentType'){
+
+			}
+			else if(info[i][0] == 'Height'){
+
+			}
+			else if(info[i][0] == 'DirectionType'){
+
+			}
+			else if(info[i][0] == 'Opacity'){
+				ret += `<div codeId='${info[i][0]}'><i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center;'></i><span>&nbsp;${toTitle(info[i][0])}&nbsp;</span><div style="display:inline-block;float:right"><input type="range" min="0" max="100" value=${info[i][1]} /><div style="display:inline-block;width:30px;">${info[i][1]}</div></div></div>`;
+			}
+			else if(info[i][0] == 'DirectionSize'){
+
+			}
+			else if(info[i][0] == 'CellWidth'){
+
+			}
+			else if(info[i][0] == 'CellHeight'){
+
 			}
 			else{
 				ret += `<div style="display:flex;flex-direction:row" codeId='${info[i][0]}'><i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center;'></i><span>&nbsp;${toTitle(info[i][0])}&nbsp;</span><input style="flex:1;"  value="${info[i][1]}"/></div>`;
@@ -147,6 +192,29 @@ function loadGlobalSettingsDetail(){
 				});
 			}
 		});
+	});
+	$("div[codeId='On']").each(function(){
+		if($(this).children("i").eq(1).attr("class") == 'far fa-square')
+			$(this).nextAll().each(function(){
+				$(this).css('display', 'none');
+			});
+		$(this).children("i").eq(1).css("cursor", "pointer").click(function(){
+			if($(this).attr("class") == 'fas fa-check-square'){
+				$(this).attr("class", 'far fa-square');
+				$(this).parent().nextAll().each(function(){
+					$(this).css('display', 'none');
+				});
+			}
+			else{
+				$(this).attr("class", 'fas fa-check-square');
+				$(this).parent().nextAll().each(function(){
+					$(this).css('display', 'block');
+				});
+			}
+		});
+	});
+	$(`input[type='range']`).bind('input propertychange', function(){
+		$(this).next().html($(this).val());
 	});
 }
 loadGlobalSettingsDetail();

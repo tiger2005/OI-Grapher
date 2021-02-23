@@ -71,6 +71,7 @@
 	<footer>
 		<script src="./js/client.js"></script>
 		<script>
+			$("body").css("transition", "0.3s");
 			function ChangeTheme(force){
 				if(!force && localStorage.getItem('StyleChosen')!='FollowSystem')	return;
 				if(!DarkMode){
