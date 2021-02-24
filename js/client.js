@@ -104,6 +104,9 @@ function drawOptions(info, as){
 			else if(info[i][0] == 'Color'){
 				ret += `<div style="display:flex;flex-direction:row" codeid='${info[i][0]}'><i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center;'></i><span>&nbsp;${toTitle(info[i][0])}&nbsp;</span><span class="fas fa-square-full ColorShow"></span>&nbsp;<input style="flex:1;" class="ColorInput" value="${info[i][1]}"/></div>`;
 			}
+			else if(info[i][0] == 'Family'){
+				ret += `<div style="display:flex;flex-direction:row" codeid='${info[i][0]}'><i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center;'></i><span>&nbsp;${toTitle(info[i][0])}&nbsp;</span><span class="FamilyShow" style="width:50px;overflow:hidden;"></span>&nbsp;<input style="flex:1;" class="FamilyInput" value="${info[i][1]}"/></div>`;
+			}
 			else if(info[i][0] == 'FontSize'){
 				ret += `<div codeid='${info[i][0]}'><i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center;'></i><span>&nbsp;${toTitle(info[i][0])}&nbsp;</span><div style="display:inline-block;float:right"><i class="fas fa-minus-square"></i><input type="range" min="1" max="50" value=${info[i][1]} /><i class="fas fa-plus-square"></i>&nbsp;<div style="display:inline-block;width:30px;">${info[i][1]}</div></div></div>`;
 			}
@@ -156,6 +159,17 @@ function drawOptions(info, as){
 function checkColor(x){
 	return $(`<span style="color:${x}"></span>`).css("color") != '';
 }
+function checkFamily(x){
+	console.log(x);
+	if(x == "Arial" || x == "Nunito")	return true;
+	var a = $(`<div style="display:inline-block;font-family:'${x}',Arial;font-size:72px;">中文English123</div>`);
+	var b = $(`<div style="display:inline-block;font-family:Arial;font-size:72px;">中文English123</div>`);
+	$("body").append(a).append(b);
+	console.log(a.width(),b.width(),a.height(),b.height())
+	var ret = (a.width() != b.width()) || (a.height() != b.height());
+	a.remove();b.remove();
+	return ret;
+}
 function loadGlobalSettingsDetail(){
 	$(".InfoDetail").eq(0).html(drawOptions(GlobalStyleStorage, ''));
 	$(".ColorInput").each(function(){
@@ -169,6 +183,17 @@ function loadGlobalSettingsDetail(){
 			$(this).prev().attr("class", "fas fa-exclamation-triangle").css("color", "#ffcc00");
 		else
 			$(this).prev().attr("class", "fas fa-square-full ColorShow").css("color", $(this).val());
+	});
+	$(".FamilyInput").each(function(){
+		if(!checkFamily($(this).val()))
+			$(this).prev().css("font-family", "'Font Awesome 5 Free'").html("").attr("class", "fas fa-exclamation-triangle").css("color", "#ffcc00");
+		else
+			$(this).prev().attr("class", "FamilyShow").css("color", "inherit").html("Abc123").css("font-family", $(this).val());
+	}).bind('input propertychange', function(){
+		if(!checkFamily($(this).val()))
+			$(this).prev().css("font-family", "'Font Awesome 5 Free'").html("").attr("class", "fas fa-exclamation-triangle").css("color", "#ffcc00");
+		else
+			$(this).prev().attr("class", "FamilyShow").css("color", "inherit").html("Abc123").css("font-family", $(this).val());
 	});
 	$("div[codeid='Custom']").each(function(){
 		if($(this).children("i").eq(1).attr("class") == 'far fa-square')
@@ -185,7 +210,11 @@ function loadGlobalSettingsDetail(){
 			else{
 				$(this).attr("class", 'fas fa-check-square');
 				$(this).parent().nextAll().each(function(){
-					$(this).css('display', 'block');
+					console.log($(this));
+					if($(this).children("div").length != 0)
+						$(this).css('display', 'block');
+					else
+						$(this).css('display', 'flex');
 				});
 			}
 		});
@@ -241,6 +270,10 @@ $(".GraphFolder").css("cursor","pointer").click(function(){
 		$(this).parent().children('.InfoSonList').css('display', 'none'),
 		$(this).attr('id', 'fold').removeClass('fa-angle-down').addClass('fa-angle-right');
 })
+function clickBackground(event){
+	var x = event.offsetX;
+	var y = event.offsetY;
+}
 // 看到这里还以为我写了一万多字的博客，太占内存和视觉距离了
 
 // 然后在自己的svg页面中获取到该svg，我的代码是这个样子的

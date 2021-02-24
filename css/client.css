@@ -125,6 +125,7 @@
 	flex-direction: row;
 }
 input{
+	display: inline-block;
 	-webkit-app-region: no-drag;
 	transition: background 0.3s;
     padding: 1px;
