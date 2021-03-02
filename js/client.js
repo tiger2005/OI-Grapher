@@ -1,7 +1,7 @@
 var chosenTool1 = 0;
 var chosenTool2 = 0;
 var GlobalStyleStorage;
-var DotInherit = [["Background",[["Custom","inherit"],["Color","inherit"],["Opacity","inherit"]]],["Border",[["Color","inherit"],["Width","inherit"],["Radius","inherit"]]],["Font",[["Custom","inherit"],["Family","inherit"],["Color","inherit"],["FontSize","inherit"],["FontStyle","inherit"],["FontBold","inherit"]]],["DotType",undefined]];
+var DotInherit = [["Background",[["Custom","inherit"],["Color","inherit"],["Opacity","inherit"]]],["Border",[["Color","inherit"],["Width","inherit"],["Radius","inherit"]]],["Font",[["Custom","inherit"],["Family","inherit"],["Color","inherit"],["FontSize","inherit"],["FontStyle","inherit"],["FontBold","inherit"]]],["DotType",undefined],["DotSize","inherit"]];
 var EdgeInherit = [["Background",[["Color","inherit"],["Opacity","inherit"]]],["Width","inherit"],["Index",[["Background",[["Custom","inherit"],["Color","inherit"],["Opacity","inherit"]]],["Font",[["Custom","inherit"],["Family","inherit"],["Color","inherit"],["FontSize","inherit"],["FontStyle","inherit"],["FontBold","inherit"]]],["Border",[["Color","inherit"],["Width","inherit"],["Radius","inherit"]]]]],["DirectionType",undefined],["DirectionSize","inherit"]];
 var TableInherit = [["CellWidth","inherit"],["CellHeight","inherit"],["Background",[["Custom","inherit"],["Color","inherit"],["Opacity","inherit"]]],["Border",[["Color","inherit"],["Width","inherit"],["Radius","inherit"]]],["Font",[["Custom","inherit"],["Family","inherit"],["Color","inherit"],["FontSize","inherit"],["FontStyle","inherit"],["FontBold","inherit"]]],["Secondary",[["On",undefined],["Expression","inherit"],["Cell",[["Background",[["Custom","inherit"],["Color","inherit"],["Opacity","inherit"]]],["Border",[["Color","inherit"],["Width","inherit"],["Radius","inherit"]]],["Padding","inherit"],["Spacing","inherit"]]]]]];
 var TextInheit = [["Background",[["Custom","inherit"],["Color","inherit"],["Opacity","inherit"]]],["Border",[["Color","inherit"],["Width","inherit"],["Radius","inherit"]]],["Font",[["Custom","inherit"],["Family","inherit"],["Color","inherit"],["FontSize","inherit"],["FontStyle","inherit"],["FontBold","inherit"]]]];
@@ -23,7 +23,8 @@ function setAsDefault(){
 			["Background", [['Custom', false], ['Color', '#fff'], ['Opacity', '100']]],
 			["Border", BorderDefault],
 			['Font', [['Custom', false], ["Family", "Nunito"], ["Color", "#000"], ["FontSize", "14"], ["FontStyle", "normal"], ["FontBold", "500"]]],
-			["DotType", '0']]
+			["DotType", '0'],
+			["DotSize", "20"]]
 		],
 		["Edge", [
 			["Background", EdgeBackgroundDefault],
@@ -139,6 +140,9 @@ function drawOptions(info, as, ifDetail){
 			else if(info[i][0] == 'DotType'){
 				ret += `<div style="display:flex;flex-direction:row;position:relative;" codeid='${info[i][0]}'>${ifDetail?` <i class="fas fa-lock LockInherit"></i>&nbsp;`:''}<i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center;'></i><span>&nbsp;${toTitle(info[i][0])}&nbsp;</span><span style="flex:1;"><i class="fas fa-tools"></i> Still in Progress...</span></div>`;
 			}
+			else if(info[i][0] == 'DotSize'){
+				ret += `<div codeid='${info[i][0]}' style=;position:relative;">${ifDetail?` <i class="fas fa-lock LockInherit"></i>&nbsp;`:''}<i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center;'></i><span>&nbsp;${toTitle(info[i][0])}&nbsp;</span><div style="display:inline-block;float:right"><i class="fas fa-minus-square"></i><input type="range" min="1" max="100" value=${info[i][1]} /><i class="fas fa-plus-square"></i>&nbsp;<div style="display:inline-block;width:30px;">${info[i][1]}</div></div>${enableInherit}</div>`;
+			}
 			else if(info[i][0] == 'ContentType'){
 				ret += `<div style="display:flex;flex-direction:row;position:relative;" codeid='${info[i][0]}'>${ifDetail?` <i class="fas fa-lock LockInherit"></i>&nbsp;`:''}<i class='${GetIcon[info[i][0]]}' style='width:18px;text-align:center;'></i><span>&nbsp;${toTitle(info[i][0])}&nbsp;</span><select style="flex:1;" value="${info[i][1]}"/><option value="0-index" ${info[i][1]=='0-index'?' selected="selected"':''}>0-index</option><option value="1-index" ${info[i][1]=='1-index'?' selected="selected"':''}>1-index</option></select>${enableInherit}</div>`;
 			}
@@ -192,8 +196,10 @@ function flushInformation(ths){
 			ret.push(p.children("input").val());
 		else if(p.children("select").length!=0)
 			ret.push(p.children("select").val());
+		else if(p.attr("codeid") == "Custom" || p.attr("codeid") == "On")
+			ret.push(p.children("i:last-child").attr("class") == "fas fa-check-square");
 		else
-			ret.push(p.children("div > input").val());
+			ret.push(p.children("div").eq(0).children("input").val());
 		q.push(ret);
 	}
 	return q;
@@ -213,7 +219,7 @@ function loadGlobalSettingsDetail(ifDetail, to){
 			$(this).prev().attr("class", "fas fa-square-full ColorShow").css("color", $(this).val());
 		if(!ifDetail){
 			GlobalStyleStorage = flushInformation(to);
-			console.log(GlobalStyleStorage);
+			flushGraph();
 		}
 	});
 	$(".FamilyInput").each(function(){
@@ -228,7 +234,7 @@ function loadGlobalSettingsDetail(ifDetail, to){
 			$(this).prev().attr("class", "FamilyShow").css("color", "inherit").html("Abc123").css("font-family", $(this).val());
 		if(!ifDetail){
 			GlobalStyleStorage = flushInformation(to);
-			console.log(GlobalStyleStorage);
+			flushGraph();
 		}
 	});
 	$("div[codeid='Custom']").each(function(){
@@ -254,7 +260,7 @@ function loadGlobalSettingsDetail(ifDetail, to){
 			}
 			if(!ifDetail){
 				GlobalStyleStorage = flushInformation(to);
-				console.log(GlobalStyleStorage);
+				flushGraph();
 			}
 		});
 	});
@@ -281,7 +287,7 @@ function loadGlobalSettingsDetail(ifDetail, to){
 			}
 			if(!ifDetail){
 				GlobalStyleStorage = flushInformation(to);
-				console.log(GlobalStyleStorage);
+				flushGraph();
 			}
 		});
 	});
@@ -295,7 +301,7 @@ function loadGlobalSettingsDetail(ifDetail, to){
 				$(this).next().next().next().css("font-weight", p);
 			if(!ifDetail){
 				GlobalStyleStorage = flushInformation(to);
-				console.log(GlobalStyleStorage);
+				flushGraph();
 			}
 		});
 		$(this).next().css("cursor", "pointer").unbind("click").click(function(){
@@ -307,21 +313,23 @@ function loadGlobalSettingsDetail(ifDetail, to){
 				$(this).next().css("font-weight", p);
 			if(!ifDetail){
 				GlobalStyleStorage = flushInformation(to);
-				console.log(GlobalStyleStorage);
+				flushGraph();
 			}
 		});
 	})
 	.unbind('input propertychange').bind('input propertychange', function(){
-		$(this).next().next().html($(this).val());	
+		$(this).next().next().html($(this).val());
+		if($(this).parent().parent().attr("codeid") == "FontBold")
+			$(this).next().next().css("font-weight", $(this).val());
 		if(!ifDetail){
 			GlobalStyleStorage = flushInformation(to);
-			console.log(GlobalStyleStorage);
+			flushGraph();
 		}
 	});
 	$("select").unbind('input propertychange').bind('input propertychange', function(){
 		if(!ifDetail){
 			GlobalStyleStorage = flushInformation(to);
-			console.log(GlobalStyleStorage);
+			flushGraph();
 		}
 	});
 	if(ifDetail){
@@ -329,14 +337,14 @@ function loadGlobalSettingsDetail(ifDetail, to){
 			$(this).parent().children(":last-child").css("display", "block");
 			if(!ifDetail){
 				GlobalStyleStorage = flushInformation(to);
-				console.log(GlobalStyleStorage);
+				flushGraph();
 			}
 		});
 		$(".UnlockInherit").css("cursor", "pointer").unbind('click').click(function(){
 			$(this).parent().css("display", "none");
 				if(!ifDetail){
 				GlobalStyleStorage = flushInformation(to);
-				console.log(GlobalStyleStorage);
+				flushGraph();
 			}
 		});
 	}
@@ -356,18 +364,112 @@ function isNumber(val){
     var regPos = /^\d+$/;
     return regPos.test(val);
 }
+function checkAttr3(a,b,c){
+	if(a!='inherit')	return a;
+	if(b!='inherit')	return b;
+	return c;
+}
+function checkAttr2(a,b){
+	if(a!='inherit')	return a;
+	return b;
+}
+function reloadDotPosition(x){
+	var d = $(`circle[dotid=${x}]`);
+	d.attr("cx", GraphDetail[0][x][0][1][0][1]);
+	d.attr("cy", GraphDetail[0][x][0][1][1][1]);
+	var t = $(`text[textdotid=${x}]`);
+	t.attr("x", GraphDetail[0][x][0][1][0][1]);
+	t.attr("y", GraphDetail[0][x][0][1][1][1]);
+	// flush edge
+}
+function reloadGraphPosition(){
+	for(var i=0;i<GraphDetail[0].length;i++){
+		var d = $(`circle[dotid=${i}]`);
+		d.attr("cx", GraphDetail[0][i][0][1][0][1]);
+		d.attr("cy", GraphDetail[0][i][0][1][1][1]);
+		var t = $(`text[textdotid=${i}]`);
+		t.attr("x", GraphDetail[0][i][0][1][0][1]);
+		t.attr("y", GraphDetail[0][i][0][1][1][1]);
+	}
+}
 function flushGraph(){
-
+	$(".DotContainer").html("");
+	for(var i=0;i<GraphDetail[0].length;i++){
+		var d = $("<circle/>");
+		d.attr("dotid", i);
+		d.attr("cx", GraphDetail[0][i][0][1][0][1]);
+		d.attr("cy", GraphDetail[0][i][0][1][1][1]);
+		var p = GraphDetail[0][i][1][1], tar = p;
+		if(tar[0][1][0][1] == 'inherit')	tar = GlobalStyleStorage[1][1];
+		if(tar[0][1][0][1] == false)	tar = GlobalStyleStorage[0][1][0][1];
+		else	tar = tar[0][1];
+		d.attr("fill", checkAttr2(tar[tar.length-2][1], GlobalStyleStorage[0][1][0][1][0][1]));
+		d.attr("fill-opacity", checkAttr2(tar[tar.length-1][1], GlobalStyleStorage[0][1][0][1][1][1])/100);
+		d.attr("stroke", checkAttr2(p[1][1][0][1], GlobalStyleStorage[1][1][1][1][0][1]));
+		d.attr("stroke-width", checkAttr2(p[1][1][1][1], GlobalStyleStorage[1][1][1][1][1][1]));
+		d.attr("r", checkAttr2(p[4][1],GlobalStyleStorage[1][1][4][1]));
+		d.attr("style", "z-index:1;");
+		var t = $(`<text>${GraphDetail[0][i][0][1][2][1]}</text>`);
+		tar = p;t.attr("textdotid", i);
+		if(tar[2][1][0][1] == 'inherit')	tar = GlobalStyleStorage[1][1];
+		if(tar[2][1][0][1] == false)	tar = GlobalStyleStorage[0][1][1][1];
+		else	tar = tar[2][1];
+		t.attr("x", GraphDetail[0][i][0][1][0][1]);
+		t.attr("y", GraphDetail[0][i][0][1][1][1]);
+		t.attr("fill", checkAttr2(tar[tar.length-4][1], GlobalStyleStorage[0][1][1][1][1][1]));
+		var sty = "user-select:none;pointer-events:none;";
+		sty += `font-family:${checkAttr2(tar[tar.length-5][1], GlobalStyleStorage[0][1][1][1][0][1])};`;
+		sty += `font-size:${checkAttr2(tar[tar.length-3][1], GlobalStyleStorage[0][1][1][1][2][1])};`;
+		sty += `font-style:${checkAttr2(tar[tar.length-2][1], GlobalStyleStorage[0][1][1][1][3][1])};`;
+		sty += `font-weight:${checkAttr2(tar[tar.length-1][1], GlobalStyleStorage[0][1][1][1][4][1])};`;
+		t.attr("style", sty).attr("text-anchor", "middle");
+		t.attr("dy", "0.35em");
+		$(".DotContainer").append(d);
+		$(".DotContainer").append(t);
+	}
+	$(".EdgeContainer").html("");
+	for(var i=0;i<GraphDetail[1].length;i++){
+		var e = $("<path/>");
+	}
+	$(".RealSvg").html($(".RealSvg").html());
+	$("circle").mousedown(function(e){
+		if(e.which==1){	
+			var from = $(this);
+			var positionDiv = $(this).offset();
+		    var fatherDiv = $(this).parent().parent().offset();
+		    var distanceX = e.pageX - positionDiv.left - $(this).attr("r");
+		    var distanceY = e.pageY - positionDiv.top - $(this).attr("r");
+		    $(document).mousemove(function(e){
+		    	var x = e.pageX - distanceX - fatherDiv.left;
+	        	var y = e.pageY - distanceY - fatherDiv.top;
+	        	if(x<0)	x=0;if(x>600) x=600;
+	        	if(y<0) y=0;if(y>450) y=450;
+	        	GraphDetail[0][Number(from.attr("dotid"))][0][1][0][1]=x;
+	        	GraphDetail[0][Number(from.attr("dotid"))][0][1][1][1]=y;
+	        	reloadDotPosition(from.attr("dotid"));
+		    });
+		    $(document).mouseup(function(){
+		    	$(document).off('mousemove');
+		    })
+		}
+	}).contextmenu(function(e){
+		return false;
+	}).click(function(e){
+		if(chosenTool1 == 3 || chosenTool1 == 4){
+			
+		}
+	})
 }
 function clickBackground(event){
+	if(event.target != event.currentTarget)	return;
 	var x = event.offsetX;
 	var y = event.offsetY;
 	if(chosenTool1 == 2){
-		GraphDetail[0].push([[""], DotInherit]);
+		GraphDetail[0].push([["Information", [["x", x], ["y", y], ["Index", ""]]], ["Style", DotInherit]]);
 		var p = [];
 		for(var i=0;i<GraphDetail[0].length-1;i++)
-			if(isNumber(GraphDetail[0][i][0]))
-				p.push(Number(GraphDetail[0][i][0]));
+			if(isNumber(GraphDetail[0][i][0][1][2][1]))
+				p.push(Number(GraphDetail[0][i][0][1][2][1]));
 		if(GlobalStyleStorage[0][1][2][1] == "1-index")
 			p.push(0);
 		var app = new Array(p.length + 1);
@@ -375,7 +477,7 @@ function clickBackground(event){
 			if(p[i]<app.length)	app[p[i]]=true;
 		var q=0;
 		while(app[q]==true)	++q;
-		GraphDetail[0][GraphDetail[0].length-1][0] = q;
+		GraphDetail[0][GraphDetail[0].length-1][0][1][2][1] = q;
 		++IdDetail[0];
 	}
 	flushGraph();

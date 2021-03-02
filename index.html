@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<script src="./js/jquery.min.js"></script>
@@ -47,7 +48,12 @@
 			</div>
 			<div class="GrapherContainer">
 				<div class="SvgContainer">
-					<svg height="450" width="600" onclick="clickBackground(event)"></svg>
+					<svg class="RealSvg" height="450" width="600" onclick="clickBackground(event)">
+						<g class="TableContainer"></g>
+						<g class="EdgeContainer"></g>
+						<g class="DotContainer"></g>
+						<g class="TextContainer"></g>
+					</svg>
 				</div>
 				<div class="ToolListContainer">
 					<span class="ToolList">

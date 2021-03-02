@@ -119,6 +119,7 @@
 	height: 100%;
 	overflow: scroll;
 	font-size: 14px;
+	transition: 0.2s;
 }
 .InfoDetailContainer{
 	display: flex;
