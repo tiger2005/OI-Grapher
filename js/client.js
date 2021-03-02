@@ -177,7 +177,7 @@ function checkFamily(x){
 	var a = $(`<div style="display:inline-block;font-family:'${x}',Arial;font-size:72px;">中文English123</div>`);
 	var b = $(`<div style="display:inline-block;font-family:Arial;font-size:72px;">中文English123</div>`);
 	$("body").append(a).append(b);
-	console.log(a.width(),b.width(),a.height(),b.height())
+	// console.log(a.width(),b.width(),a.height(),b.height())
 	var ret = (a.width() != b.width()) || (a.height() != b.height());
 	a.remove();b.remove();
 	return ret;
@@ -388,7 +388,7 @@ function reloadDotPosition(x){
 	for(var k=0;k<relatedEdge[x].length;k++){
 		var i = relatedEdge[x][k];
 		var e = $(`line[edgeid=${i}]`);
-		console.log(e);
+		// console.log(e);
 		var x1 = GraphDetail[0][GraphDetail[1][i][0][1][0][1][1]][0][1][0][1];
 		var x2 = GraphDetail[0][GraphDetail[1][i][0][1][1][1][1]][0][1][0][1];
 		var y1 = GraphDetail[0][GraphDetail[1][i][0][1][0][1][1]][0][1][1][1];
@@ -400,16 +400,6 @@ function reloadDotPosition(x){
 		x1 += detX * r1; y1 += detY * r1;
 		x2 -= detX * r2; y2 -= detY * r2;
 		e.attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
-	}
-}
-function reloadGraphPosition(){
-	for(var i=0;i<GraphDetail[0].length;i++){
-		var d = $(`circle[dotid=${i}]`);
-		d.attr("cx", GraphDetail[0][i][0][1][0][1]);
-		d.attr("cy", GraphDetail[0][i][0][1][1][1]);
-		var t = $(`text[textdotid=${i}]`);
-		t.attr("x", GraphDetail[0][i][0][1][0][1]);
-		t.attr("y", GraphDetail[0][i][0][1][1][1]);
 	}
 }
 function flushGraph(){
@@ -461,14 +451,14 @@ function flushGraph(){
 		var y1 = GraphDetail[0][GraphDetail[1][i][0][1][0][1][1]][0][1][1][1];
 		var y2 = GraphDetail[0][GraphDetail[1][i][0][1][1][1][1]][0][1][1][1];
 		var len = Math.sqrt((y2-y1)*(y2-y1)+(x2-x1)*(x2-x1));
-		console.log(GraphDetail[1][i][0][1][0][1][1],GraphDetail[1][i][0][1][1][1][1]);
+		// console.log(GraphDetail[1][i][0][1][0][1][1],GraphDetail[1][i][0][1][1][1][1]);
 		var r1 = RofDot[GraphDetail[1][i][0][1][0][1][1]];
 		var r2 = RofDot[GraphDetail[1][i][0][1][1][1][1]];
-		console.log(r1,r2,len);
+		// console.log(r1,r2,len);
 		var detX = 1.0*(x2-x1)/len, detY = 1.0*(y2-y1)/len;
 		x1 += detX * r1; y1 += detY * r1;
 		x2 -= detX * r2; y2 -= detY * r2;
-		console.log(detX,detY,x1,x2,y1,y2,r1,r2);
+		// console.log(detX,detY,x1,x2,y1,y2,r1,r2);
 		e.attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
 		var p = GraphDetail[1][i][1][1];
 		if(p == 'inherit')	p = EdgeInherit;
@@ -519,7 +509,7 @@ function flushGraph(){
 				$(".LeadLine").css("display", "inline");
 				$(".LeadLine").attr("x1", $(this).attr("cx")).attr("y1", $(this).attr("cy"));
 				$(".LeadLine").attr("x2", $(this).attr("cx")).attr("y2", $(this).attr("cy"));
-				console.log(positionDiv, distanceX, distanceY, $(this).attr("cx"));
+				// console.log(positionDiv, distanceX, distanceY, $(this).attr("cx"));
 				$(document).mousemove(function(e){
 					var x = e.pageX - positionDiv.left;
 					var y = e.pageY - positionDiv.top;
@@ -564,7 +554,7 @@ function clickBackground(event){
 		++IdDetail[0];relatedEdge.push([]);
 	}
 	else if(chosenTool1 == 3 || chosenTool1 == 4){
-		console.log(toolType);
+		// console.log(toolType);
 		if(toolType == 1){
 			$(document).off('mousemove');
 			$(".LeadLine").css("display", "none");
