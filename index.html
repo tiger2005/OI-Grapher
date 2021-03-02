@@ -49,6 +49,16 @@
 			<div class="GrapherContainer">
 				<div class="SvgContainer">
 					<svg class="RealSvg" height="450" width="600" onclick="clickBackground(event)">
+						<defs class="DefsContainer">
+							<marker id="triangle" viewBox="0 0 10 10"
+								refX="1" refY="5"
+								markerUnits="strokeWidth"
+								markerWidth="10" markerHeight="10"
+								orient="auto">
+							<path d="M 0 0 L 10 5 L 0 10 z" fill="#f00"/>
+							</marker>
+						</defs>
+						<line class="LeadLine" style="display:none;pointer-events:none;" stroke="red" stroke-width="1"/>
 						<g class="TableContainer"></g>
 						<g class="EdgeContainer"></g>
 						<g class="DotContainer"></g>

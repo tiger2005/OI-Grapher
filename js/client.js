@@ -360,6 +360,9 @@ $(".GraphFolder").css("cursor","pointer").click(function(){
 })
 var IdDetail = [0, 0, 0, 0];
 var GraphDetail = [[], [], [], []];
+var relatedEdge = [];
+var toolType = 0;
+var edgeFrom = [];
 function isNumber(val){
     var regPos = /^\d+$/;
     return regPos.test(val);
@@ -399,7 +402,9 @@ function flushGraph(){
 		d.attr("dotid", i);
 		d.attr("cx", GraphDetail[0][i][0][1][0][1]);
 		d.attr("cy", GraphDetail[0][i][0][1][1][1]);
-		var p = GraphDetail[0][i][1][1], tar = p;
+		var p = GraphDetail[0][i][1][1];
+		if(p == 'inherit')	p = DotInherit;
+		var tar = p;
 		if(tar[0][1][0][1] == 'inherit')	tar = GlobalStyleStorage[1][1];
 		if(tar[0][1][0][1] == false)	tar = GlobalStyleStorage[0][1][0][1];
 		else	tar = tar[0][1];
@@ -428,8 +433,35 @@ function flushGraph(){
 		$(".DotContainer").append(t);
 	}
 	$(".EdgeContainer").html("");
+	$(".DefsContainer").html("");
 	for(var i=0;i<GraphDetail[1].length;i++){
-		var e = $("<path/>");
+		var e = $("<line />");
+		var x1 = GraphDetail[0][GraphDetail[1][i][0][1]][0][1];
+		var x2 = GraphDetail[0][GraphDetail[1][i][1][1]][0][1];
+		var y1 = GraphDetail[0][GraphDetail[1][i][0][1]][1][1];
+		var y2 = GraphDetail[0][GraphDetail[1][i][1][1]][1][1];
+		var len = Math.sqrt((y2-y1)*(y2-y1)+(x2-x1)*(x2-x1));
+		var r1 = GraphDetail[0][GraphDetail[1][i][0][1]][2][1];
+		var r2 = GraphDetail[0][GraphDetail[1][i][0][1]][2][1];
+		if(len < r1 + r2)	continue;
+		var detX = 1.0*(x2-x1)/len, detY = 1.0*(y2-y1)/len;
+		x1 += detX * r1; y1 += detY * r1;
+		x2 -= detX * r2; y2 -= detY * r2;
+		e.attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
+		var p = GraphDetail[0][i][1][1];
+		if(p == 'inherit')	p = DotInherit;
+		var tar = p;
+		if(tar[0][1][0][1] == 'inherit')	tar = GlobalStyleStorage[1][1];
+		if(tar[0][1][0][1] == false)	tar = GlobalStyleStorage[0][1][0][1];
+		else	tar = tar[0][1];
+		d.css("stroke", checkAttr2(tar[tar.length-2][1], GlobalStyleStorage[0][1][0][1][0][1]));
+		d.css("stroke-opacity", checkAttr2(tar[tar.length-1][1], GlobalStyleStorage[0][1][0][1][1][1])/100);
+		d.css("stroke-width", checkAttr2(p[1][1], GlobalStyleStorage[2][1][1][1]));
+
+		if(GraphDetail[1][i][0][1][2][1] == true){
+
+		}
+		e.attr("x1")
 	}
 	$(".RealSvg").html($(".RealSvg").html());
 	$("circle").mousedown(function(e){
@@ -456,7 +488,36 @@ function flushGraph(){
 		return false;
 	}).click(function(e){
 		if(chosenTool1 == 3 || chosenTool1 == 4){
-			
+			if(toolType == 0){
+				edgeFrom = ["Dot", $(this).attr("dotid")];
+				toolType = 1;
+				var positionDiv = $(this).parent().parent().offset();
+				var distanceX = e.pageX - positionDiv.left;
+				var distanceY = e.pageY - positionDiv.top;
+				$(".LeadLine").css("display", "inline");
+				$(".LeadLine").attr("x1", $(this).attr("cx")).attr("y1", $(this).attr("cy"));
+				$(".LeadLine").attr("x2", $(this).attr("cx")).attr("y2", $(this).attr("cy"));
+				console.log(positionDiv, distanceX, distanceY, $(this).attr("cx"));
+				$(document).mousemove(function(e){
+					var x = e.pageX - positionDiv.left;
+					var y = e.pageY - positionDiv.top;
+					if(x<0)	x=0;if(x>600) x=600;
+					if(y<0) y=0;if(y>450) y=450;
+					$(".LeadLine").attr("x2", x).attr("y2", y);
+				});
+			}
+			else{
+				toolType = 0;
+				$(document).off('mousemove');
+				$(".LeadLine").css("display", "none");
+				if(edgeFrom[1] != $(this).attr("dotid")){
+					GraphDetail[1].push([["Information", [["From", edgeFrom], ["To", ["Dot", $(this).attr("dotid")]], ["Direct", chosenTool1 == 4], ["Value", ""]]], ["Style", 'inherit']]);
+					relatedEdge[Number(edgeFrom[1])].push(IdDetail[1]);
+					relatedEdge[Number($(this).attr("dotid"))].push(IdDetail[1]);
+					++IdDetail[1];
+				}
+				edgeFrom = [];
+			}
 		}
 	})
 }
@@ -465,7 +526,7 @@ function clickBackground(event){
 	var x = event.offsetX;
 	var y = event.offsetY;
 	if(chosenTool1 == 2){
-		GraphDetail[0].push([["Information", [["x", x], ["y", y], ["Index", ""]]], ["Style", DotInherit]]);
+		GraphDetail[0].push([["Information", [["x", x], ["y", y], ["Index", ""]]], ["Style", 'inherit']]);
 		var p = [];
 		for(var i=0;i<GraphDetail[0].length-1;i++)
 			if(isNumber(GraphDetail[0][i][0][1][2][1]))
@@ -478,18 +539,20 @@ function clickBackground(event){
 		var q=0;
 		while(app[q]==true)	++q;
 		GraphDetail[0][GraphDetail[0].length-1][0][1][2][1] = q;
-		++IdDetail[0];
+		++IdDetail[0];relatedEdge.push([]);
+	}
+	else if(chosenTool1 == 3 || chosenTool1 == 4){
+		console.log(toolType);
+		if(toolType == 1){
+			$(document).off('mousemove');
+			$(".LeadLine").css("display", "none");
+			toolType = 0;edgeFrom = [];
+		}
 	}
 	flushGraph();
 }
-// 看到这里还以为我写了一万多字的博客，太占内存和视觉距离了
-
-// 然后在自己的svg页面中获取到该svg，我的代码是这个样子的
 
 // var canvas = $("#today_chartcontainer svg")[0];
-// //调用方法转换即可，转换结果就是uri,
 // svgAsPngUri(canvas, null, function(uri) {
-
-// //这里的uri就是要下载到本地的图片地址，是不是很简单啊
 // $("#tabpanel_items").append('<a class="downBtn"; href="'+uri+'" download="图片下载">下载图片</a>');
 // });
