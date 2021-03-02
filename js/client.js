@@ -363,6 +363,7 @@ var GraphDetail = [[], [], [], []];
 var relatedEdge = [];
 var toolType = 0;
 var edgeFrom = [];
+var RofDot = [];
 function isNumber(val){
     var regPos = /^\d+$/;
     return regPos.test(val);
@@ -384,6 +385,22 @@ function reloadDotPosition(x){
 	t.attr("x", GraphDetail[0][x][0][1][0][1]);
 	t.attr("y", GraphDetail[0][x][0][1][1][1]);
 	// flush edge
+	for(var k=0;k<relatedEdge[x].length;k++){
+		var i = relatedEdge[x][k];
+		var e = $(`line[edgeid=${i}]`);
+		console.log(e);
+		var x1 = GraphDetail[0][GraphDetail[1][i][0][1][0][1][1]][0][1][0][1];
+		var x2 = GraphDetail[0][GraphDetail[1][i][0][1][1][1][1]][0][1][0][1];
+		var y1 = GraphDetail[0][GraphDetail[1][i][0][1][0][1][1]][0][1][1][1];
+		var y2 = GraphDetail[0][GraphDetail[1][i][0][1][1][1][1]][0][1][1][1];
+		var len = Math.sqrt((y2-y1)*(y2-y1)+(x2-x1)*(x2-x1));
+		var r1 = RofDot[GraphDetail[1][i][0][1][0][1][1]];
+		var r2 = RofDot[GraphDetail[1][i][0][1][1][1][1]];
+		var detX = 1.0*(x2-x1)/len, detY = 1.0*(y2-y1)/len;
+		x1 += detX * r1; y1 += detY * r1;
+		x2 -= detX * r2; y2 -= detY * r2;
+		e.attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
+	}
 }
 function reloadGraphPosition(){
 	for(var i=0;i<GraphDetail[0].length;i++){
@@ -397,6 +414,7 @@ function reloadGraphPosition(){
 }
 function flushGraph(){
 	$(".DotContainer").html("");
+	RofDot = new Array(GraphDetail[0].length);
 	for(var i=0;i<GraphDetail[0].length;i++){
 		var d = $("<circle/>");
 		d.attr("dotid", i);
@@ -413,6 +431,7 @@ function flushGraph(){
 		d.attr("stroke", checkAttr2(p[1][1][0][1], GlobalStyleStorage[1][1][1][1][0][1]));
 		d.attr("stroke-width", checkAttr2(p[1][1][1][1], GlobalStyleStorage[1][1][1][1][1][1]));
 		d.attr("r", checkAttr2(p[4][1],GlobalStyleStorage[1][1][4][1]));
+		RofDot[i] = checkAttr2(p[4][1],GlobalStyleStorage[1][1][4][1])
 		d.attr("style", "z-index:1;");
 		var t = $(`<text>${GraphDetail[0][i][0][1][2][1]}</text>`);
 		tar = p;t.attr("textdotid", i);
@@ -436,32 +455,35 @@ function flushGraph(){
 	$(".DefsContainer").html("");
 	for(var i=0;i<GraphDetail[1].length;i++){
 		var e = $("<line />");
-		var x1 = GraphDetail[0][GraphDetail[1][i][0][1]][0][1];
-		var x2 = GraphDetail[0][GraphDetail[1][i][1][1]][0][1];
-		var y1 = GraphDetail[0][GraphDetail[1][i][0][1]][1][1];
-		var y2 = GraphDetail[0][GraphDetail[1][i][1][1]][1][1];
+		e.attr("edgeid", i);
+		var x1 = GraphDetail[0][GraphDetail[1][i][0][1][0][1][1]][0][1][0][1];
+		var x2 = GraphDetail[0][GraphDetail[1][i][0][1][1][1][1]][0][1][0][1];
+		var y1 = GraphDetail[0][GraphDetail[1][i][0][1][0][1][1]][0][1][1][1];
+		var y2 = GraphDetail[0][GraphDetail[1][i][0][1][1][1][1]][0][1][1][1];
 		var len = Math.sqrt((y2-y1)*(y2-y1)+(x2-x1)*(x2-x1));
-		var r1 = GraphDetail[0][GraphDetail[1][i][0][1]][2][1];
-		var r2 = GraphDetail[0][GraphDetail[1][i][0][1]][2][1];
-		if(len < r1 + r2)	continue;
+		console.log(GraphDetail[1][i][0][1][0][1][1],GraphDetail[1][i][0][1][1][1][1]);
+		var r1 = RofDot[GraphDetail[1][i][0][1][0][1][1]];
+		var r2 = RofDot[GraphDetail[1][i][0][1][1][1][1]];
+		console.log(r1,r2,len);
 		var detX = 1.0*(x2-x1)/len, detY = 1.0*(y2-y1)/len;
 		x1 += detX * r1; y1 += detY * r1;
 		x2 -= detX * r2; y2 -= detY * r2;
+		console.log(detX,detY,x1,x2,y1,y2,r1,r2);
 		e.attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
-		var p = GraphDetail[0][i][1][1];
-		if(p == 'inherit')	p = DotInherit;
+		var p = GraphDetail[1][i][1][1];
+		if(p == 'inherit')	p = EdgeInherit;
 		var tar = p;
-		if(tar[0][1][0][1] == 'inherit')	tar = GlobalStyleStorage[1][1];
-		if(tar[0][1][0][1] == false)	tar = GlobalStyleStorage[0][1][0][1];
-		else	tar = tar[0][1];
-		d.css("stroke", checkAttr2(tar[tar.length-2][1], GlobalStyleStorage[0][1][0][1][0][1]));
-		d.css("stroke-opacity", checkAttr2(tar[tar.length-1][1], GlobalStyleStorage[0][1][0][1][1][1])/100);
-		d.css("stroke-width", checkAttr2(p[1][1], GlobalStyleStorage[2][1][1][1]));
+		if(tar[0][1][0][1] == 'inherit')	tar = GlobalStyleStorage[2][1];
+		tar = tar[0][1];
+		e.css("stroke", checkAttr2(tar[tar.length-2][1], GlobalStyleStorage[0][1][0][1][0][1]));
+		e.css("stroke-opacity", checkAttr2(tar[tar.length-1][1], GlobalStyleStorage[0][1][0][1][1][1])/100);
+		e.css("stroke-width", checkAttr2(p[1][1], GlobalStyleStorage[2][1][1][1]));
 
 		if(GraphDetail[1][i][0][1][2][1] == true){
 
 		}
-		e.attr("x1")
+
+		$(".EdgeContainer").append(e);
 	}
 	$(".RealSvg").html($(".RealSvg").html());
 	$("circle").mousedown(function(e){
@@ -514,7 +536,7 @@ function flushGraph(){
 					GraphDetail[1].push([["Information", [["From", edgeFrom], ["To", ["Dot", $(this).attr("dotid")]], ["Direct", chosenTool1 == 4], ["Value", ""]]], ["Style", 'inherit']]);
 					relatedEdge[Number(edgeFrom[1])].push(IdDetail[1]);
 					relatedEdge[Number($(this).attr("dotid"))].push(IdDetail[1]);
-					++IdDetail[1];
+					++IdDetail[1];flushGraph();
 				}
 				edgeFrom = [];
 			}
